@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export PORT=${PORT:-8000}
+export PORT=8000
 export HOST=${HOST:-"0.0.0.0"}
 export WORKERS=${WORKERS:-1}
 
