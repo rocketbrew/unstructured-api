@@ -1,0 +1,9 @@
+entryPoints:
+  web:
+    # Listen on port 8001 for incoming requests
+    address: :8001
+
+providers:
+  # Enable the file provider to define routers / middlewares / services in file
+  file:
+    filename: /etc/traefik/dynamic.yml

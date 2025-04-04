@@ -35,8 +35,25 @@ COPY --chown=${NB_USER}:${NB_USER} prepline_${PIPELINE_PACKAGE}/ prepline_${PIPE
 COPY --chown=${NB_USER}:${NB_USER} exploration-notebooks exploration-notebooks
 COPY --chown=${NB_USER}:${NB_USER} scripts/app-start.sh scripts/app-start.sh
 
-ENTRYPOINT ["scripts/app-start.sh"]
+# Install Traefik inside the same container
+USER root
+RUN wget -q https://github.com/traefik/traefik/releases/download/v3.3.5/traefik_v3.3.5_linux_amd64.tar.gz && \
+    tar -xzf traefik_v3.3.5_linux_amd64.tar.gz && \
+    mv traefik /usr/local/bin/traefik && \
+    chmod +x /usr/local/bin/traefik && \
+    rm traefik_v3.3.5_linux_amd64.tar.gz
+
+# Copy Traefik config
+COPY traefik/traefik.yml /etc/traefik/traefik.yml
+COPY traefik/dynamic.yml /etc/traefik/dynamic.yml
+
+# Switch back to unprivileged user
+USER ${NB_USER}
+
 # Expose a default port of 8000. Note: The EXPOSE instruction does not actually publish the port,
 # but some tooling will inspect containers and perform work contingent on networking support declared.
 
 EXPOSE 8000
+
+# Start both Traefik and Uvicorn in the same container
+CMD traefik --configFile=/etc/traefik/traefik.yml & scripts/app-start.sh

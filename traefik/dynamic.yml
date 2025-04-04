@@ -1,0 +1,17 @@
+# http routing section
+http:
+  routers:
+    # Define a connection between requests and services
+    to-whoami:
+      rule:
+        "PathPrefix(`/`)"
+        # If the rule matches, applies the middleware
+      # If the rule matches, forward to the whoami service (declared below)
+      service: whoami
+
+  services:
+    # Define how to reach an existing service on our infrastructure
+    whoami:
+      loadBalancer:
+        servers:
+          - url: http://localhost:8000
